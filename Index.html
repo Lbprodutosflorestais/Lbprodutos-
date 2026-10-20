@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroFlorestal - Soluções Agrícolas & Florestais</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Google Fonts - Serif Premium para a Marca -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'floresta': '#183D2B',   /* 25% - Principal da marca */
+                        'agricola': '#4F7942',   /* 15% - Detalhes/Secundário */
+                        'dourado': '#E7B547',    /* 10% - CTAs/Destaques */
+                        'natural': '#F5F7F2',    /* 50% - Fundos e Conteúdo */
+                        'grafite': '#333B35',    /* Textos e Rodapé */
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        brand: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #F5F7F2;
+            color: #333B35;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #F5F7F2;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #4F7942;
+            border-radius: 4px;
+        }
+        
+        .btn-gold {
+            background-color: #E7B547;
+            color: #183D2B;
+            font-weight: 700;
+            transition: all 0.2s ease-in-out;
+        }
+        .btn-gold:hover {
+            background-color: #d2a138;
+            transform: translateY(-1px);
+        }
+
+        .badge-discount {
+            background-color: #E7B547;
+            color: #183D2B;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between custom-scrollbar">
+
+    <!-- Top Bar -->
+    <div class="bg-floresta text-white text-xs py-2 px-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <a href="tel:31953497741" class="hover:text-dourado transition"><i class="fa-solid fa-phone text-dourado mr-1"></i> (31) 95349-7741</a>
+                <a href="mailto:lb.produtosflorestais@gmail.com" class="hidden md:inline hover:text-dourado transition"><i class="fa-solid fa-envelope text-dourado mr-1"></i> lb.produtosflorestais@gmail.com</a>
+                <span class="hidden sm:inline text-dourado font-medium"><i class="fa-solid fa-truck-fast mr-1"></i> Entregas em todo o Brasil</span>
+            </div>
+            <div class="flex items-center space-x-3">
+                <button onclick="switchTab('store')" class="hover:text-dourado transition flex items-center gap-1">
+                    <i class="fa-solid fa-store text-agricola"></i> Loja
+                </button>
+                <span class="text-gray-500">|</span>
+                <button onclick="switchTab('dashboard')" class="bg-agricola hover:bg-opacity-80 text-white px-2.5 py-1 rounded text-xs flex items-center gap-1 font-semibold transition">
+                    <i class="fa-solid fa-user-tie text-dourado"></i> Área do Vendedor
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Navigation Header -->
+    <header class="bg-floresta text-white shadow-lg sticky top-0 z-40">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex items-center justify-between gap-4">
+                
+                <!-- Logo -->
+                <div class="flex items-center space-x-3 cursor-pointer group" onclick="switchTab('store')">
+                    <div class="bg-natural p-2 rounded-lg text-floresta flex items-center justify-center shadow-md group-hover:scale-105 transition-transform duration-200">
+                        <i class="fa-solid fa-tree text-2xl text-agricola"></i>
+                    </div>
+                    <div>
+                        <span class="font-brand text-2xl sm:text-3xl font-bold tracking-tight text-white block leading-tight">
+                            LB <span class="text-dourado font-extrabold italic">PRODUTOS FLORESTAIS</span>
+                        </span>
+                        <span class="text-[10px] sm:text-xs text-agricola font-semibold tracking-widest uppercase block -mt-1">DEFENSIVOS, NUTRIÇÃO & INSUMOS</span>
+                    </div>
+                </div>
+
+                <!-- Search Bar -->
+                <div id="search-container" class="flex-1 max-w-xl mx-4 hidden md:block">
+                    <div class="relative">
+                        <input type="text" id="search-input" oninput="filterProducts()" placeholder="Buscar fertilizantes, pesticidas, vermicidas..." class="w-full bg-natural text-grafite pl-10 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-dourado text-sm shadow-inner">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-agricola"></i>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <button onclick="toggleCart()" class="bg-agricola hover:bg-opacity-90 p-2.5 rounded-lg flex items-center space-x-2 transition">
+                            <i class="fa-solid fa-cart-shopping text-dourado text-lg"></i>
+                            <span id="cart-count" class="bg-dourado text-floresta font-bold text-xs rounded-full px-2 py-0.5">0</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile Search Bar -->
+            <div class="mt-3 md:hidden">
+                <div class="relative">
+                    <input type="text" id="search-input-mobile" oninput="filterProductsMobile()" placeholder="Buscar produtos agrícolas..." class="w-full bg-natural text-grafite pl-10 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-dourado text-sm">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-agricola"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content" class="flex-grow container mx-auto px-4 py-6">
+        
+        <!-- LOJA VIRTUAL SECTION -->
+        <section id="store-view" class="space-y-6">
+            
+            <!-- Banner Oferta -->
+            <div class="bg-gradient-to-r from-floresta via-agricola to-floresta rounded-2xl p-6 text-white shadow-md relative overflow-hidden">
+                <div class="relative z-10 max-w-2xl">
+                    <span class="bg-dourado text-floresta font-bold text-xs uppercase px-3 py-1 rounded-full inline-block mb-2">
+                        <i class="fa-solid fa-leaf mr-1"></i> Campanha Safra Forte 2026
+                    </span>
+                    <h1 class="text-2xl sm:text-4xl font-extrabold mb-2 text-white">Insumos Florestais e Defensivos de Alta Performance</h1>
+                    <p class="text-sm sm:text-base text-gray-200 mb-4">Garantia de produtividade com pesticidas, vermicidas e fertilizantes das melhores marcas.</p>
+                    <a href="#catalogo" class="btn-gold px-5 py-2.5 rounded-lg inline-block text-sm shadow-md">
+                        Ver Catálogo de Ofertas <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+                <i class="fa-solid fa-seedling absolute right-4 -bottom-6 text-9xl text-white opacity-10 pointer-events-none"></i>
+            </div>
+
+            <!-- Categorias & Filtros -->
+            <div id="catalogo" class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+                <!-- Buttons de Categoria -->
+                <div class="flex flex-wrap gap-2" id="category-buttons">
+                    <button onclick="filterCategory('todos')" class="cat-btn active border border-agricola bg-floresta text-white px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2">
+                        <i class="fa-solid fa-boxes-stacked text-dourado"></i> Todos os Produtos
+                    </button>
+                    <button onclick="filterCategory('fertilizantes')" class="cat-btn border border-gray-300 text-grafite hover:bg-natural px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2">
+                        <i class="fa-solid fa-wheat-awn text-agricola"></i> Fertilizantes
+                    </button>
+                    <button onclick="filterCategory('pesticidas')" class="cat-btn border border-gray-300 text-grafite hover:bg-natural px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2">
+                        <i class="fa-solid fa-shield-halved text-agricola"></i> Pesticidas / Defensivos
+                    </button>
+                    <button onclick="filterCategory('vermicidas')" class="cat-btn border border-gray-300 text-grafite hover:bg-natural px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2">
+                        <i class="fa-solid fa-bug-slash text-agricola"></i> Vermicidas / Antiparasitários
+                    </button>
+                </div>
+
+                <!-- Ordenação -->
+                <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+                    <label class="text-xs text-grafite font-semibold whitespace-nowrap">Ordenar por:</label>
+                    <select id="sort-select" onchange="sortProducts()" class="bg-natural border border-gray-300 rounded-lg text-sm p-2 text-grafite focus:outline-none focus:border-agricola">
+                        <option value="relevancia">Mais Relevantes</option>
+                        <option value="preco-menor">Menor Preço</option>
+                        <option value="preco-maior">Maior Preço</option>
+                        <option value="nome">Nome A-Z</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Grid de Produtos -->
+            <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Inserido dinamicamente via JS -->
+            </div>
+
+            <!-- Empty State Search -->
+            <div id="no-products" class="hidden text-center py-12 bg-white rounded-xl shadow-sm border border-gray-200">
+                <i class="fa-solid fa-magnifying-glass text-4xl text-agricola mb-3"></i>
+                <h3 class="text-lg font-bold text-floresta">Nenhum produto encontrado</h3>
+                <p class="text-sm text-gray-500">Tente ajustar seus termos de busca ou filtros.</p>
+            </div>
+        </section>
+
+        <!-- DASHBOARD VENDEDOR SECTION -->
+        <section id="dashboard-view" class="hidden space-y-6">
+            
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-floresta text-white p-6 rounded-2xl shadow-md">
+                <div>
+                    <span class="text-xs text-dourado font-bold uppercase tracking-wider">Acesso Restrito - Equipe Comercial LB</span>
+                    <h2 class="text-2xl font-bold flex items-center gap-2 font-brand">
+                        <i class="fa-solid fa-chart-line text-dourado"></i> Painel de Vendas LB Produtos Florestais
+                    </h2>
+                    <p class="text-sm text-gray-300">Emissão rápida de pedidos, geração de cobranças e gestão de vendas.</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="openQuickSaleModal()" class="btn-gold px-4 py-2 rounded-lg text-sm flex items-center gap-2 shadow">
+                        <i class="fa-solid fa-plus-circle"></i> Novo Pedido
+                    </button>
+                </div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm border-l-4 border-l-agricola">
+                    <div class="flex justify-between items-center text-gray-500 mb-1">
+                        <span class="text-xs font-bold uppercase">Total Vendido</span>
+                        <i class="fa-solid fa-wallet text-agricola text-lg"></i>
+                    </div>
+                    <span id="kpi-total" class="text-2xl font-extrabold text-floresta">R$ 0,00</span>
+                    <span class="text-xs text-green-600 block mt-1"><i class="fa-solid fa-arrow-up"></i> +12.5% este mês</span>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm border-l-4 border-l-dourado">
+                    <div class="flex justify-between items-center text-gray-500 mb-1">
+                        <span class="text-xs font-bold uppercase">Pedidos Realizados</span>
+                        <i class="fa-solid fa-receipt text-dourado text-lg"></i>
+                    </div>
+                    <span id="kpi-orders" class="text-2xl font-extrabold text-floresta">0</span>
+                    <span class="text-xs text-gray-500 block mt-1">Registrados no sistema</span>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm border-l-4 border-l-floresta">
+                    <div class="flex justify-between items-center text-gray-500 mb-1">
+                        <span class="text-xs font-bold uppercase">Ticket Médio</span>
+                        <i class="fa-solid fa-chart-pie text-floresta text-lg"></i>
+                    </div>
+                    <span id="kpi-avg" class="text-2xl font-extrabold text-floresta">R$ 0,00</span>
+                    <span class="text-xs text-gray-500 block mt-1">Por produtor/cliente</span>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm border-l-4 border-l-blue-500">
+                    <div class="flex justify-between items-center text-gray-500 mb-1">
+                        <span class="text-xs font-bold uppercase">Cobranças Pendentes</span>
+                        <i class="fa-solid fa-clock text-blue-500 text-lg"></i>
+                    </div>
+                    <span id="kpi-pending" class="text-2xl font-extrabold text-floresta">0</span>
+                    <span class="text-xs text-yellow-600 block mt-1">Aguardando confirmação</span>
+                </div>
+            </div>
+
+            <!-- Tabela de Pedidos Recentes -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="p-4 border-b border-gray-200 bg-natural flex justify-between items-center">
+                    <h3 class="font-bold text-floresta text-base flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-agricola"></i> Histórico e Gestão de Pedidos
+                    </h3>
+                    <span class="text-xs bg-agricola text-white px-2.5 py-1 rounded-full font-medium">Atualizado em Tempo Real</span>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-grafite">
+                        <thead class="bg-gray-100 text-xs font-semibold text-floresta uppercase border-b border-gray-200">
+                            <tr>
+                                <th class="p-3">ID Pedido</th>
+                                <th class="p-3">Cliente / Propriedade</th>
+                                <th class="p-3">Data</th>
+                                <th class="p-3">Itens</th>
+                                <th class="p-3">Total</th>
+                                <th class="p-3">Status</th>
+                                <th class="p-3 text-center">Ações / Fatura</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sales-table-body" class="divide-y divide-gray-200">
+                            <!-- Preenchido via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL CARRINHO DE COMPRAS -->
+    <div id="cart-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex justify-end transition-opacity">
+        <div class="bg-white w-full max-w-md h-full flex flex-col justify-between p-6 shadow-2xl relative animate-fade-in">
+            <div>
+                <div class="flex justify-between items-center border-b border-gray-200 pb-4 mb-4">
+                    <h2 class="text-xl font-bold text-floresta flex items-center gap-2">
+                        <i class="fa-solid fa-basket-shopping text-agricola"></i> Seu Carrinho
+                    </h2>
+                    <button onclick="toggleCart()" class="text-gray-400 hover:text-grafite text-xl">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                
+                <div id="cart-items" class="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+                    <!-- Itens do carrinho JS -->
+                </div>
+            </div>
+
+            <div class="border-t border-gray-200 pt-4 space-y-3">
+                <div class="flex justify-between text-sm text-grafite">
+                    <span>Subtotal:</span>
+                    <span id="cart-subtotal" class="font-semibold">R$ 0,00</span>
+                </div>
+                <div class="flex justify-between text-sm text-agricola font-semibold">
+                    <span>Frete Agrícola:</span>
+                    <span>GRÁTIS</span>
+                </div>
+                <div class="flex justify-between text-lg font-extrabold text-floresta pt-2 border-t border-dashed">
+                    <span>Total:</span>
+                    <span id="cart-total" class="text-floresta">R$ 0,00</span>
+                </div>
+                
+                <button onclick="checkoutFromCart()" class="btn-gold w-full py-3 rounded-lg flex justify-center items-center gap-2 shadow-lg">
+                    <i class="fa-solid fa-circle-check"></i> Finalizar Compra
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE COBRANÇA (GERAR PIX/FATURA) -->
+    <div id="invoice-modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 relative">
+            <button onclick="closeInvoiceModal()" class="absolute right-4 top-4 text-gray-400 hover:text-grafite text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <div class="text-center border-b border-gray-100 pb-4">
+                <span class="bg-agricola text-white text-xs px-3 py-1 rounded-full uppercase font-bold tracking-wider">Cobrança Gerada</span>
+                <h3 class="text-2xl font-bold font-brand text-floresta mt-2">LB Produtos Florestais</h3>
+                <p class="text-xs text-gray-500" id="invoice-id">Pedido #0000</p>
+            </div>
+
+            <div class="bg-natural p-4 rounded-xl border border-gray-200 space-y-2 text-sm">
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Cliente:</span>
+                    <span font-semibold text-grafite id="invoice-client">Produtor Agrícola</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Valor Total:</span>
+                    <span class="text-xl font-extrabold text-floresta" id="invoice-value">R$ 0,00</span>
+                </div>
+                <div class="flex justify-between text-xs text-gray-500">
+                    <span>Vencimento:</span>
+                    <span id="invoice-date">Hoje</span>
+                </div>
+            </div>
+
+            <!-- Opções de Pagamento -->
+            <div class="space-y-3">
+                <span class="text-xs font-bold text-floresta uppercase block">Pague via PIX (Aprovação Instantânea)</span>
+                
+                <div class="flex flex-col items-center justify-center bg-gray-50 p-4 rounded-xl border border-dashed border-agricola">
+                    <!-- QR Code Simulado com SVG -->
+                    <svg class="w-36 h-36 border-4 border-white shadow-sm" viewBox="0 0 100 100">
+                        <rect width="100" height="100" fill="white"/>
+                        <path d="M0,0 L30,0 L30,30 L0,30 Z M10,10 L20,10 L20,20 L10,20 Z" fill="#183D2B"/>
+                        <path d="M70,0 L100,0 L100,30 L70,30 Z M80,10 L90,10 L90,20 L80,20 Z" fill="#183D2B"/>
+                        <path d="M0,70 L30,70 L30,100 L0,100 Z M10,80 L20,80 L20,90 L10,90 Z" fill="#183D2B"/>
+                        <rect x="40" y="10" width="15" height="15" fill="#4F7942"/>
+                        <rect x="15" y="40" width="20" height="20" fill="#E7B547"/>
+                        <rect x="45" y="45" width="25" height="25" fill="#183D2B"/>
+                        <rect x="75" y="40" width="15" height="20" fill="#4F7942"/>
+                        <rect x="40" y="80" width="20" height="10" fill="#183D2B"/>
+                        <rect x="70" y="70" width="20" height="20" fill="#E7B547"/>
+                    </svg>
+                    <p class="text-xs text-gray-500 mt-2">Escaneie o QR Code com o app do seu banco</p>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-xs text-gray-600 font-medium">Chave Copia e Cola PIX:</label>
+                    <div class="flex gap-2">
+                        <input type="text" readonly id="pix-code" value="00020126580014BR.GOV.BCB.PIX0136agroflorestal-vendas-2026-pix-key520400005303986540" class="bg-gray-100 border border-gray-300 rounded p-2 text-xs w-full text-gray-600">
+                        <button onclick="copyPix()" class="bg-agricola hover:bg-floresta text-white text-xs px-3 py-2 rounded font-semibold transition whitespace-nowrap">
+                            <i class="fa-solid fa-copy"></i> Copiar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-2 flex gap-2">
+                <button onclick="confirmPayment()" class="btn-gold flex-1 py-2.5 rounded-lg text-sm shadow">
+                    <i class="fa-solid fa-check-double"></i> Confirmar Pagamento
+                </button>
+                <button onclick="closeInvoiceModal()" class="bg-gray-200 hover:bg-gray-300 text-grafite px-4 py-2.5 rounded-lg text-sm">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL NOVO PEDIDO DO VENDEDOR -->
+    <div id="quicksale-modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl space-y-4 relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeQuickSaleModal()" class="absolute right-4 top-4 text-gray-400 hover:text-grafite text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <div class="border-b border-gray-200 pb-3">
+                <h3 class="text-xl font-bold text-floresta flex items-center gap-2">
+                    <i class="fa-solid fa-cart-plus text-agricola"></i> Emissão Rápida de Pedido (Vendedor)
+                </h3>
+                <p class="text-xs text-gray-500">Cadastre a venda presencial ou por telefone para o produtor.</p>
+            </div>
+
+            <form id="quicksale-form" onsubmit="submitQuickSale(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-floresta uppercase mb-1">Nome do Cliente / Fazenda</label>
+                    <input type="text" required id="qs-client" placeholder="Ex: Fazenda Santa Maria - João Silva" class="w-full bg-natural border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-agricola focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-floresta uppercase mb-1">Selecione o Produto</label>
+                    <select id="qs-product" onchange="updateQsPrice()" class="w-full bg-natural border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-agricola focus:outline-none">
+                        <!-- Preenchido via JS -->
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-floresta uppercase mb-1">Quantidade</label>
+                        <input type="number" id="qs-qty" min="1" value="1" onchange="updateQsPrice()" class="w-full bg-natural border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-agricola focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-floresta uppercase mb-1">Valor Unitário</label>
+                        <input type="text" id="qs-unit-price" readonly class="w-full bg-gray-100 border border-gray-300 rounded-lg p-2.5 text-sm text-gray-600">
+                    </div>
+                </div>
+
+                <div class="bg-floresta text-white p-3 rounded-lg flex justify-between items-center">
+                    <span class="text-xs font-semibold">Valor Total do Pedido:</span>
+                    <span id="qs-total-price" class="text-xl font-bold text-dourado">R$ 0,00</span>
+                </div>
+
+                <div class="pt-2 flex gap-3">
+                    <button type="submit" class="btn-gold flex-1 py-3 rounded-lg text-sm shadow">
+                        <i class="fa-solid fa-paper-plane mr-1"></i> Gerar Pedido & Cobrança
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-floresta text-white border-t-4 border-agricola mt-12">
+        <div class="container mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                
+                <div>
+                    <div class="flex items-center space-x-2 mb-3">
+                        <i class="fa-solid fa-tree text-2xl text-dourado"></i>
+                        <span class="font-brand text-xl font-bold text-white">LB <span class="text-dourado">PRODUTOS FLORESTAIS</span></span>
+                    </div>
+                    <p class="text-xs text-gray-300 leading-relaxed">
+                        Especialistas em nutrição vegetal e proteção de cultivos florestais e agrícolas. Defensivos, pesticidas e fertilizantes com alta eficiência técnica.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="text-sm font-bold text-dourado uppercase mb-3">Linha de Produtos</h4>
+                    <ul class="text-xs text-gray-300 space-y-2">
+                        <li><a href="#" onclick="filterCategory('fertilizantes')" class="hover:text-dourado">Fertilizantes NPK & Foliares</a></li>
+                        <li><a href="#" onclick="filterCategory('pesticidas')" class="hover:text-dourado">Insecticidas e Fungicidas</a></li>
+                        <li><a href="#" onclick="filterCategory('vermicidas')" class="hover:text-dourado">Vermicidas e Antiparasitários</a></li>
+                        <li><a href="#" onclick="filterCategory('todos')" class="hover:text-dourado">Bioestimulantes Florestais</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-sm font-bold text-dourado uppercase mb-3">Atendimento Técnico</h4>
+                    <ul class="text-xs text-gray-300 space-y-2">
+                        <li><i class="fa-solid fa-phone text-agricola mr-2"></i> (31) 95349-7741</li>
+                        <li><i class="fa-solid fa-envelope text-agricola mr-2"></i> lb.produtosflorestais@gmail.com</li>
+                        <li><i class="fa-solid fa-clock text-agricola mr-2"></i> Seg a Sexta: 07h30 - 18h00</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-sm font-bold text-dourado uppercase mb-3">Garantia & Segurança</h4>
+                    <div class="flex space-x-3 text-2xl text-agricola mb-3">
+                        <i class="fa-solid fa-shield-virus"></i>
+                        <i class="fa-solid fa-truck-ramp-box"></i>
+                        <i class="fa-solid fa-certificate"></i>
+                    </div>
+                    <p class="text-xs text-gray-400">Produtos devidamente registrados no MAPA. Siga sempre as orientações do engenheiro agrônomo.</p>
+                </div>
+
+            </div>
+
+            <div class="border-t border-gray-700 mt-8 pt-4 text-center text-xs text-gray-400">
+                <p>&copy; 2026 LB Produtos Florestais. Todos os direitos reservados. Hospedado com sucesso no GitHub Pages.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // BASE DE DADOS EXTENSA DE PRODUTOS AGRÍCOLAS E FLORESTAIS
+        const productsData = [
+            {
+                id: 1,
+                name: "Fertilizante NPK 10-10-10 Florestal (25kg)",
+                category: "fertilizantes",
+                price: 189.90,
+                oldPrice: 219.00,
+                badge: "Mais Vendido",
+                rating: 4.9,
+                reviews: 128,
+                image: "https://placehold.co/400x300/183D2B/F5F7F2?text=NPK+10-10-10+Florestal",
+                desc: "Equilíbrio nutricional ideal para mudas de eucalipto, pinus e culturas agrícolas em crescimento."
+            },
+            {
+                id: 2,
+                name: "Pesticida Fungicida Proteção Total Pro (1 L)",
+                category: "pesticidas",
+                price: 145.00,
+                oldPrice: 160.00,
+                badge: "Alta Eficiência",
+                rating: 4.8,
+                reviews: 94,
+                image: "https://placehold.co/400x300/4F7942/F5F7F2?text=Fungicida+Pro+1L",
+                desc: "Combate eficaz contra ferrugem, manchas foliares e pragas de fungos em florestas comerciais."
+            },
+            {
+                id: 3,
+                name: "Vermicida Agrícola Antiparasitário Solos (5 L)",
+                category: "vermicidas",
+                price: 299.90,
+                oldPrice: 340.00,
+                badge: "Concentrado",
+                rating: 5.0,
+                reviews: 62,
+                image: "https://placehold.co/400x300/333B35/E7B547?text=Vermicida+Solos+5L",
+                desc: "Eliminação e controle de nematóides e vermes de solo protegendo o sistema radicular das plantas."
+            },
+            {
+                id: 4,
+                name: "Fertilizante Foliar Bioestimulante Raiz (5 L)",
+                category: "fertilizantes",
+                price: 210.00,
+                oldPrice: 245.00,
+                badge: "Orgânico",
+                rating: 4.7,
+                reviews: 45,
+                image: "https://placehold.co/400x300/183D2B/E7B547?text=Bioestimulante+Foliar",
+                desc: "Acelera o enraizamento e aumenta a absorção de micronutrientes na lavoura."
+            },
+            {
+                id: 5,
+                name: "Insecticida Sistêmico Mata-Lagarta (1 L)",
+                category: "pesticidas",
+                price: 178.50,
+                oldPrice: 195.00,
+                badge: "Ação Rápida",
+                rating: 4.9,
+                reviews: 110,
+                image: "https://placehold.co/400x300/4F7942/F5F7F2?text=Insecticida+Sistemico",
+                desc: "Proteção prolongada contra pragas mastigadoras e sugadoras em culturas florestais."
+            },
+            {
+                id: 6,
+                name: "Vermicida de Ação Profunda VermiAgro (1 L)",
+                category: "vermicidas",
+                price: 129.00,
+                oldPrice: 149.90,
+                badge: "Oferta",
+                rating: 4.6,
+                reviews: 38,
+                image: "https://placehold.co/400x300/183D2B/F5F7F2?text=VermiAgro+1L",
+                desc: "Especialmente formulado para solos turfosos e de alta infestação parasitária."
+            },
+            {
+                id: 7,
+                name: "Fertilizante Adubo Orgânico Húmico (50kg)",
+                category: "fertilizantes",
+                price: 115.00,
+                oldPrice: 130.00,
+                badge: "Ecológico",
+                rating: 4.8,
+                reviews: 83,
+                image: "https://placehold.co/400x300/4F7942/E7B547?text=Adubo+Org%C3%A2nico+50kg",
+                desc: "Melhorador da estrutura física do solo, enriquecido com matéria orgânica pura."
+            },
+            {
+                id: 8,
+                name: "Herbicida Seletivo Pós-Emergente (20 L)",
+                category: "pesticidas",
+                price: 680.00,
+                oldPrice: 750.00,
+                badge: "Galao 20L",
+                rating: 4.9,
+                reviews: 150,
+                image: "https://placehold.co/400x300/333B35/F5F7F2?text=Herbicida+Seletivo+20L",
+                desc: "Controle definitivo de plantas daninhas sem afetar o cultivo principal de árvores."
+            }
+        ];
+
+        // ESTADOS DA APLICAÇÃO
+        let cart = [];
+        let currentCategory = 'todos';
+        let salesHistory = [
+            { id: "PED-9821", client: "Fazenda Reflorestamento Alvorada", date: "20/10/2026", items: "2x Fertilizante NPK 10-10-10", total: 379.80, status: "Pago" },
+            { id: "PED-9822", client: "Sítio Vista Verde - Carlos", date: "20/10/2026", items: "1x Herbicida Seletivo 20L", total: 680.00, status: "Pendente" },
+            { id: "PED-9823", client: "Agropecuária Boreal", date: "19/10/2026", items: "3x Vermicida Solos 5L", total: 899.70, status: "Pago" }
+        ];
+
+        document.addEventListener("DOMContentLoaded", () => {
+            renderProducts();
+            updateCartUI();
+            renderSalesTable();
+            populateQsProducts();
+        });
+
+        // Alternar entre abas (Loja / Dashboard)
+        function switchTab(tab) {
+            const storeView = document.getElementById('store-view');
+            const dashboardView = document.getElementById('dashboard-view');
+            
+            if (tab === 'store') {
+                storeView.classList.remove('hidden');
+                dashboardView.classList.add('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                storeView.classList.add('hidden');
+                dashboardView.classList.remove('hidden');
+                renderSalesTable();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // Renderizar Grid de Produtos
+        function renderProducts(productsToRender = productsData) {
+            const grid = document.getElementById('products-grid');
+            const noProducts = document.getElementById('no-products');
+            grid.innerHTML = '';
+
+            if (productsToRender.length === 0) {
+                noProducts.classList.remove('hidden');
+                return;
+            } else {
+                noProducts.classList.add('hidden');
+            }
+
+            productsToRender.forEach(prod => {
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-xl shadow-sm hover:shadow-md transition duration-300 border border-gray-200 overflow-hidden flex flex-col justify-between group";
+                
+                card.innerHTML = `
+                    <div>
+                        <div class="relative overflow-hidden bg-natural">
+                            <img src="${prod.image}" alt="${prod.name}" class="w-full h-48 object-cover group-hover:scale-105 transition duration-300">
+                            <span class="absolute top-2 left-2 badge-discount font-bold text-xs px-2.5 py-1 rounded-md shadow">
+                                ${prod.badge}
+                            </span>
+                        </div>
+                        <div class="p-4 space-y-2">
+                            <div class="flex justify-between items-center text-xs text-gray-500">
+                                <span class="uppercase tracking-wider font-semibold text-agricola">${prod.category}</span>
+                                <span class="flex items-center text-dourado font-bold">
+                                    <i class="fa-solid fa-star mr-1"></i> ${prod.rating} (${prod.reviews})
+                                </span>
+                            </div>
+                            <h3 class="font-bold text-floresta text-base line-clamp-2">${prod.name}</h3>
+                            <p class="text-xs text-gray-600 line-clamp-2">${prod.desc}</p>
+                        </div>
+                    </div>
+
+                    <div class="p-4 pt-0 space-y-3">
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-xl font-extrabold text-floresta">R$ ${prod.price.toFixed(2).replace('.', ',')}</span>
+                            ${prod.oldPrice ? `<span class="text-xs text-gray-400 line-through">R$ ${prod.oldPrice.toFixed(2).replace('.', ',')}</span>` : ''}
+                        </div>
+
+                        <button onclick="addToCart(${prod.id})" class="btn-gold w-full py-2.5 rounded-lg text-sm flex items-center justify-center gap-2 shadow">
+                            <i class="fa-solid fa-cart-plus"></i> Adicionar ao Carrinho
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Filtros de Categoria
+        function filterCategory(cat) {
+            currentCategory = cat;
+            
+            // Atualiza botões
+            const buttons = document.querySelectorAll('#category-buttons button');
+            buttons.forEach(btn => {
+                btn.classList.remove('bg-floresta', 'text-white', 'border-agricola');
+                btn.classList.add('border-gray-300', 'text-grafite');
+            });
+
+            event.currentTarget.classList.add('bg-floresta', 'text-white', 'border-agricola');
+            event.currentTarget.classList.remove('border-gray-300', 'text-grafite');
+
+            applyFilters();
+        }
+
+        function filterProducts() {
+            applyFilters();
+        }
+
+        function filterProductsMobile() {
+            const query = document.getElementById('search-input-mobile').value.toLowerCase();
+            document.getElementById('search-input').value = query;
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            
+            let filtered = productsData.filter(p => {
+                const matchesCat = (currentCategory === 'todos' || p.category === currentCategory);
+                const matchesSearch = p.name.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query);
+                return matchesCat && matchesSearch;
+            });
+
+            renderProducts(filtered);
+        }
+
+        function sortProducts() {
+            const type = document.getElementById('sort-select').value;
+            let sorted = [...productsData];
+
+            if (type === 'preco-menor') sorted.sort((a,b) => a.price - b.price);
+            if (type === 'preco-maior') sorted.sort((a,b) => b.price - a.price);
+            if (type === 'nome') sorted.sort((a,b) => a.name.localeCompare(b.name));
+
+            renderProducts(sorted);
+        }
+
+        // Lógica do Carrinho
+        function toggleCart() {
+            const modal = document.getElementById('cart-modal');
+            modal.classList.toggle('hidden');
+        }
+
+        function addToCart(id) {
+            const prod = productsData.find(p => p.id === id);
+            const item = cart.find(i => i.id === id);
+
+            if (item) {
+                item.qty++;
+            } else {
+                cart.push({ ...prod, qty: 1 });
+            }
+
+            updateCartUI();
+            toggleCart();
+        }
+
+        function updateCartQty(id, delta) {
+            const item = cart.find(i => i.id === id);
+            if (item) {
+                item.qty += delta;
+                if (item.qty <= 0) {
+                    cart = cart.filter(i => i.id !== id);
+                }
+            }
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const container = document.getElementById('cart-items');
+            const countEl = document.getElementById('cart-count');
+            const subtotalEl = document.getElementById('cart-subtotal');
+            const totalEl = document.getElementById('cart-total');
+
+            container.innerHTML = '';
+
+            let total = 0;
+            let itemCount = 0;
+
+            if (cart.length === 0) {
+                container.innerHTML = `<p class="text-center text-gray-500 py-8 text-sm">Seu carrinho está vazio.</p>`;
+            } else {
+                cart.forEach(item => {
+                    total += item.price * item.qty;
+                    itemCount += item.qty;
+
+                    const itemEl = document.createElement('div');
+                    itemEl.className = "flex items-center justify-between border-b border-gray-100 pb-3";
+                    itemEl.innerHTML = `
+                        <div class="flex items-center space-x-3">
+                            <img src="${item.image}" class="w-12 h-12 object-cover rounded">
+                            <div>
+                                <h4 class="font-bold text-xs text-floresta line-clamp-1">${item.name}</h4>
+                                <span class="text-xs text-agricola font-semibold">R$ ${item.price.toFixed(2)}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="updateCartQty(${item.id}, -1)" class="bg-gray-200 text-grafite px-2 py-0.5 rounded text-xs">-</button>
+                            <span class="text-xs font-bold">${item.qty}</span>
+                            <button onclick="updateCartQty(${item.id}, 1)" class="bg-gray-200 text-grafite px-2 py-0.5 rounded text-xs">+</button>
+                        </div>
+                    `;
+                    container.appendChild(itemEl);
+                });
+            }
+
+            countEl.innerText = itemCount;
+            subtotalEl.innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+            totalEl.innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+        }
+
+        function checkoutFromCart() {
+            if (cart.length === 0) return;
+
+            const total = cart.reduce((acc, i) => acc + (i.price * i.qty), 0);
+            const itemsSummary = cart.map(i => `${i.qty}x ${i.name}`).join(', ');
+            const newId = "PED-" + Math.floor(1000 + Math.random() * 9000);
+
+            salesHistory.unshift({
+                id: newId,
+                client: "Cliente Web (Loja On-line)",
+                date: new Date().toLocaleDateString('pt-BR'),
+                items: itemsSummary,
+                total: total,
+                status: "Pendente"
+            });
+
+            cart = [];
+            updateCartUI();
+            toggleCart();
+
+            // Abre cobrança diretamente
+            openInvoiceModal(newId, "Cliente Web", total);
+        }
+
+        // Renderizar Tabela do Dashboard e KPIs
+        function renderSalesTable() {
+            const tbody = document.getElementById('sales-table-body');
+            tbody.innerHTML = '';
+
+            let totalSales = 0;
+            let pendingCount = 0;
+
+            salesHistory.forEach((sale, index) => {
+                totalSales += sale.total;
+                if (sale.status === 'Pendente') pendingCount++;
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-natural transition";
+                
+                const statusBadge = sale.status === 'Pago' 
+                    ? `<span class="bg-green-100 text-green-800 text-xs px-2.5 py-0.5 rounded-full font-bold"><i class="fa-solid fa-check mr-1"></i>Pago</span>`
+                    : `<span class="bg-yellow-100 text-yellow-800 text-xs px-2.5 py-0.5 rounded-full font-bold"><i class="fa-solid fa-clock mr-1"></i>Pendente</span>`;
+
+                tr.innerHTML = `
+                    <td class="p-3 font-bold text-floresta">${sale.id}</td>
+                    <td class="p-3 font-medium">${sale.client}</td>
+                    <td class="p-3 text-xs text-gray-500">${sale.date}</td>
+                    <td class="p-3 text-xs text-gray-600 max-w-xs truncate" title="${sale.items}">${sale.items}</td>
+                    <td class="p-3 font-bold text-floresta">R$ ${sale.total.toFixed(2).replace('.', ',')}</td>
+                    <td class="p-3">${statusBadge}</td>
+                    <td class="p-3 text-center">
+                        <button onclick="openInvoiceModal('${sale.id}', '${sale.client}', ${sale.total})" class="bg-agricola hover:bg-floresta text-white text-xs px-3 py-1.5 rounded-lg transition font-semibold">
+                            <i class="fa-solid fa-file-invoice-dollar mr-1 text-dourado"></i> Ver Fatura
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Atualiza KPIs
+            document.getElementById('kpi-total').innerText = `R$ ${totalSales.toFixed(2).replace('.', ',')}`;
+            document.getElementById('kpi-orders').innerText = salesHistory.length;
+            document.getElementById('kpi-avg').innerText = salesHistory.length > 0 ? `R$ ${(totalSales / salesHistory.length).toFixed(2).replace('.', ',')}` : 'R$ 0,00';
+            document.getElementById('kpi-pending').innerText = pendingCount;
+        }
+
+        // Modal Fatura / PIX
+        let currentInvoiceSaleId = null;
+
+        function openInvoiceModal(id, client, value) {
+            currentInvoiceSaleId = id;
+            document.getElementById('invoice-id').innerText = `Pedido ${id}`;
+            document.getElementById('invoice-client').innerText = client;
+            document.getElementById('invoice-value').innerText = `R$ ${value.toFixed(2).replace('.', ',')}`;
+            document.getElementById('invoice-date').innerText = new Date().toLocaleDateString('pt-BR');
+
+            document.getElementById('invoice-modal').classList.remove('hidden');
+        }
+
+        function closeInvoiceModal() {
+            document.getElementById('invoice-modal').classList.add('hidden');
+        }
+
+        function copyPix() {
+            const input = document.getElementById('pix-code');
+            input.select();
+            document.execCommand('copy');
+            alert('Chave PIX copiada para a área de transferência!');
+        }
+
+        function confirmPayment() {
+            if (currentInvoiceSaleId) {
+                const sale = salesHistory.find(s => s.id === currentInvoiceSaleId);
+                if (sale) {
+                    sale.status = "Pago";
+                    renderSalesTable();
+                }
+            }
+            closeInvoiceModal();
+            alert('Pagamento verificado e confirmado com sucesso!');
+        }
+
+        // Quick Sale Modal (Vendedor)
+        function openQuickSaleModal() {
+            document.getElementById('quicksale-modal').classList.remove('hidden');
+        }
+
+        function closeQuickSaleModal() {
+            document.getElementById('quicksale-modal').classList.add('hidden');
+        }
+
+        function populateQsProducts() {
+            const select = document.getElementById('qs-product');
+            select.innerHTML = '';
+            productsData.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.id;
+                opt.innerText = `${p.name} - R$ ${p.price.toFixed(2)}`;
+                select.appendChild(opt);
+            });
+            updateQsPrice();
+        }
+
+        function updateQsPrice() {
+            const pId = parseInt(document.getElementById('qs-product').value);
+            const qty = parseInt(document.getElementById('qs-qty').value) || 1;
+            const prod = productsData.find(p => p.id === pId);
+
+            if (prod) {
+                document.getElementById('qs-unit-price').value = `R$ ${prod.price.toFixed(2)}`;
+                const total = prod.price * qty;
+                document.getElementById('qs-total-price').innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+            }
+        }
+
+        function submitQuickSale(e) {
+            e.preventDefault();
+            const client = document.getElementById('qs-client').value;
+            const pId = parseInt(document.getElementById('qs-product').value);
+            const qty = parseInt(document.getElementById('qs-qty').value);
+            const prod = productsData.find(p => p.id === pId);
+
+            const total = prod.price * qty;
+            const newId = "PED-" + Math.floor(1000 + Math.random() * 9000);
+
+            salesHistory.unshift({
+                id: newId,
+                client: client,
+                date: new Date().toLocaleDateString('pt-BR'),
+                items: `${qty}x ${prod.name}`,
+                total: total,
+                status: "Pendente"
+            });
+
+            closeQuickSaleModal();
+            renderSalesTable();
+            openInvoiceModal(newId, client, total);
+            
+            // Reset form
+            document.getElementById('qs-client').value = '';
+            document.getElementById('qs-qty').value = '1';
+        }
+    </script>
+</body>
+</html>
